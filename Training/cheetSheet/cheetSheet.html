@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guide Git - VinTech</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @media print {
+            body {
+                background: white !important;
+            }
+            .step-card {
+                page-break-inside: avoid;
+            }
+            .cover-page {
+                page-break-after: always;
+            }
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .cover-page {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #0b0c13 0%, #5d2d8e 100%);
+            color: white;
+            padding: 30px 40px;
+            border-radius: 15px;
+            margin-bottom: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        @media print {
+            .cover-page {
+                min-height: auto;
+                height: auto;
+                padding: 25px 30px;
+            }
+        }
+
+        .cover-page::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 15s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.1); opacity: 0.5; }
+        }
+
+        .cover-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .cover-icon {
+            font-size: 6em;
+            margin-bottom: 30px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .cover-title {
+            font-size: 3.5em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .cover-subtitle {
+            font-size: 1.5em;
+            margin-bottom: 40px;
+            opacity: 0.95;
+        }
+
+        .cover-author-section {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            padding: 30px 50px;
+            border-radius: 20px;
+            margin: 40px 0;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .cover-author-photo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background-image: url("Jack.jpg");
+            background-size: cover;
+            background-position: center center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #667eea;
+            font-weight: bold;
+            font-size: 3em;
+            margin: 0 auto 20px;
+            border: 5px solid rgba(255,255,255,0.5);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .cover-author-name {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .cover-company {
+            font-size: 1.8em;
+            font-weight: 600;
+            color: #ffd700;
+        }
+
+        .cover-description {
+            font-size: 1.2em;
+            line-height: 1.8;
+            max-width: 700px;
+            margin: 30px auto;
+            opacity: 0.9;
+        }
+
+        .cover-stats {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #ffd700;
+        }
+
+        .stat-label {
+            font-size: 1em;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        .step-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            background: #5ca6e3;
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .step-number {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6em;
+            font-weight: bold;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+
+        /* Style pour le mot "Git" dans le titre */
+.cover-title span {
+    color: #ffd700; /* Le jaune doré utilisé pour les stats */
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); /* Ajoute un léger halo lumineux */
+    font-weight: 900; /* Police encore plus grasse */
+}
+
+    /* Style pour la nouvelle légende */
+    .tagline {
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: #ffd700; 
+        padding: 8px 20px;
+        border-radius: 50px; /* Forme de pastille */
+        font-size: 1.1em;
+        font-style: italic;
+        font-weight: 600;
+        margin-top: 15px; /* Espace sous le titre */
+        display: inline-block; /* Permet à la pastille de s'adapter au texte */
+    }
+
+
+        .step-title {
+            color: #333;
+            font-size: 1.4em;
+            font-weight: 600;
+        }
+
+        .commands-section {
+            margin: 20px 0;
+        }
+
+        .os-label {
+            background: #667eea;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 15px;
+            margin-bottom: 8px;
+        }
+
+        .command-box {
+            background: #1e1e1e;
+            color: #ffffff;
+            padding: 15px 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            margin-bottom: 10px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .description {
+            color: #000000;
+            line-height: 1.8;
+            margin: 15px 0;
+            font-size: 1.05em;
+        }
+
+        .info-box {
+            background: #ffffff;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 5px;
+            color: #856404;
+        }
+
+        .signature {
+            display: flex;
+            align-items: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+        }
+
+        .signature-photo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-image: url("Jack.jpg");
+            
+            /*-- C'est ici que la magie opère --*/
+            background-size: cover; /* Assure que l'image remplit tout l'espace */
+            background-position: center; /* Centre l'image (horizontalement et verticalement) */
+            
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+
+        .signature-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .signature-name {
+            font-weight: bold;
+            color: #333;
+            font-size: 1em;
+        }
+
+        .signature-company {
+            color: #764ba2;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        footer {
+            text-align: center;
+            color: #666;
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- PAGE DE COUVERTURE -->
+        <div class="cover-page">
+            <div class="cover-content">
+                <div class="cover-icon"><img src="git.png" alt=""></div>
+                <h1 class="cover-title">La Configuration globale de <span>Git</span></h1>
+                <!-- LÉGENDE AJOUTÉE -->
+                <p class="tagline">À faire une fois pour toutes</p>
+                <p class="cover-subtitle">De l'installation à GitHub CLI en 10 étapes simples</p>
+                
+                <div class="cover-author-section">
+                    <div class="cover-author-photo"></div>
+                    <div class="cover-author-name">Jack-Kevin TSAKEM</div>
+                    <div class="cover-company">VinTech</div>
+                </div>
+                
+                <p class="cover-description">
+                    Ce guide vous accompagne pas à pas dans la configuration complète de Git sur votre machine. 
+                    Que vous soyez sur macOS, Linux ou Windows, vous trouverez toutes les commandes nécessaires 
+                    pour devenir opérationnel en quelques minutes.
+                </p>
+                
+                <div class="cover-stats">
+                    <div class="stat-item">
+                        <div class="stat-number">10</div>
+                        <div class="stat-label">Étapes</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">3</div>
+                        <div class="stat-label">Plateformes</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">15min</div>
+                        <div class="stat-label">Temps requis</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ÉTAPE 1 -->
+        <div class="step-card">
+            <div class="step-header">
+                <div class="step-number">1</div>
+                <div class="step-title">Vérifier l'installation de Git</div>
+            </div>
+            
+            <div class="commands-section">
+                <div class="command-box">git --version</div>
+            </div>
+            
+            <div class="description">
+                Vérifier si Git est déjà installé. Sans Git, rien ne fonctionnera.
+            </div>
+            
+            <div class="info-box">
+                💡 Si Git n'est pas installé, passez à l'étape suivante.
+            </div>
+            
+            <div class="signature">
+                <div class="signature-photo"></div>
+                <div class="signature-info">
+                    <div class="signature-name">Jack-Kevin TSAKEM</div>
+                    <div class="signature-company">VinTech</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ÉTAPE 2 -->
+        <div class="step-card">
+            <div class="step-header">
+                <div class="step-number">2</div>
+                <div class="step-title">Installer Git</div>
+            </div>
+            
+            <div class="commands-section">
+                <div class="os-label">🍎 macOS</div>
+                <div class="command-box">brew install git</div>
+                
+                <div class="os-label">🐧 Ubuntu/Linux</div>
+                <div class="command-box">sudo apt update && sudo apt install git</div>
+                
+                <div class="os-label">🪟 Windows</div>
+                <div class="command-box">Télécharger depuis git-scm.com</div>
+            </div>
+            
+            <div class="description">
+                Installer Git sur votre système d'exploitation s'il est absent.
+            </div>
+            
+            <div class="signature">
+                <div class="signature-photo">JK</div>
+                <div class="signature-info">
+                    <div class="signature-name">Jack-Kevin TSAKEM</div>
+                    <div class="signature-company">VinTech</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ÉTAPE 3 -->
+        <div class="step-card">
+            <div class="step-header">
+                <div class="step-number">3</div>
+                <div class="step-title">Configurer votre identité</div>
+            </div>
+            
+            <div class="commands-section">
+                <div class="command-box">git config --global user.name "Jack-Kevin TSAKEM"
+git config --global user.email "jack.kevin@vintech.com"</div>
+            </div>
+            
+            <div class="description">
+                Configurer votre identité. C'est obligatoire pour signer vos commits.
+            </div>
+            
+            <div class="info-box">
+                💡 L'email doit correspondre à votre compte GitHub.
+            </div>
+            
+            <div class="signature">
+                <div class="signature-photo">JK</div>
+                <div class="signature-info">
+                    <div class="signature-name">Jack-Kevin TSAKEM</div>
+                    <div class="signature-company">VinTech</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ÉTAPE 4 -->
+        <div class="step-card">
+            <div class="step-header">
+                <div class="step-number">4</div>
+                <div class="step-title">Générer une clé SSH</div>
+            </div>
+            
+            <div class="commands-section">
+                <div class="command-box">ssh-keygen -t ed25519 -C "jack.kevin@vintech.com"</div>
+            </div>
+            
+            <div class="description">
+                Générer une nouvelle clé SSH pour une authentification sécurisée sans avoir à taper votre mot de passe à chaque fois.
+            </div>
+            
+            <div class="info-box">
+                💡 Appuyez sur Entrée pour accepter l'emplacement par défaut et définir un mot de passe (optionnel).
+            </div>
+            
+            <div class="signature">
+                <div class="signature-photo">JK</div>
+                <div class="signature-info">
+                    <div class="signature-name">Jack-Kevin TSAKEM</div>
+                    <div class="signature-company">VinTech</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ÉTAPE 5 -->
+        <div class="step-card">
+            <div class="step-header">
+                <div class="step-number">5</div>
+                <div class="step-title">Démarrer l'agent SSH</div>
+            </div>
+            
+            <div class="commands-section">
+                <div class="command-box">eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_ed25519</div>
+            </div>
+            
+            <div class="description">
+                Démarrer l'agent SSH et charger votre clé privée pour la session en cours.
+            </div>
+            
+            <div class="signature">
+                <div class="signature-photo">JK</div>
+                <div class="signature-info">
+                    <div class="signature-name">Jack-Kevin TSAKEM</div>
+                    <div class="signature-company">VinTech</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ÉTAPE 6 -->
+        <div class="step-card">
+            <div class="step-header">
+                <div class="step-number">6</div>
+                <div class="step-title">Copier la clé publique SSH</div>
+            </div>
+            
+            <div class="commands-section">
+                <div class="os-label">🍎 macOS</div>
+                <div class="command-box">pbcopy < ~/.ssh/id_ed25519.pub</div>
+                
+                <div class="os-label">🐧 Linux</div>
+                <div class="command-box">xclip -sel clip < ~/.ssh/id_ed25519.pub</div>
+                
+                <div class="os-label">🪟 Windows (Git Bash)</div>
+                <div class="command-box">cat ~/.ssh/id_ed25519.pub | clip</div>
+            </div>
+            
+            <div class="description">
+                Copier votre clé publique SSH dans le presse-papiers.
+            </div>
+            
+            <div class="info-box">
+                💡 Sur Linux, vous devrez peut-être installer xclip : sudo apt install xclip
+            </div>
+            
+            <div class="signature">
+                <div class="signature-photo">JK</div>
+                <div class="signature-info">
+                    <div class="signature-name">Jack-Kevin TSAKEM</div>
+                    <div class="signature-company">VinTech</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ÉTAPE 7 -->
+        <div class="step-card">
+            <div class="step-header">
+                <div class="step-number">7</div>
+                <div class="step-title">Ajouter la clé SSH à GitHub</div>
+            </div>
+            
+            <div class="commands-section">
+                <div class="command-box">1. Aller sur GitHub.com
+2. Settings → SSH and GPG keys
+3. New SSH key
+4. Coller votre clé
+5. Add SSH key</div>
+            </div>
+            
+            <div class="description">
+                Ajouter votre clé publique à votre compte GitHub pour qu'il puisse authentifier votre machine.
+            </div>
+            
+            <div class="signature">
+                <div class="signature-photo">JK</div>
+                <div class="signature-info">
+                    <div class="signature-name">Jack-Kevin TSAKEM</div>
+                    <div class="signature-company">VinTech</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ÉTAPE 8 -->
+        <div class="step-card">
+            <div class="step-header">
+                <div class="step-number">8</div>
+                <div class="step-title">Tester la connexion SSH</div>
+            </div>
+            
+            <div class="commands-section">
+                <div class="command-box">ssh -T git@github.com</div>
+            </div>
+            
+            <div class="description">
+                Tester la connexion SSH avec GitHub pour vous assurer que tout est correctement configuré.
+            </div>
+            
+            <div class="info-box">
+                💡 Vous devriez voir un message de bienvenue de GitHub.
+            </div>
+            
+            <div class="signature">
+                <div class="signature-photo">JK</div>
+                <div class="signature-info">
+                    <div class="signature-name">Jack-Kevin TSAKEM</div>
+                    <div class="signature-company">VinTech</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ÉTAPE 9 -->
+        <div class="step-card">
+            <div class="step-header">
+                <div class="step-number">9</div>
+                <div class="step-title">Installer GitHub CLI</div>
+            </div>
+            
+            <div class="commands-section">
+                <div class="os-label">🍎 macOS</div>
+                <div class="command-box">brew install gh</div>
+                
+                <div class="os-label">🐧 Ubuntu/Linux</div>
+                <div class="command-box">sudo apt install gh</div>
+                
+                <div class="os-label">🪟 Windows</div>
+                <div class="command-box">winget install --id Github.cli</div>
+            </div>
+            
+            <div class="description">
+                Installer le GitHub CLI pour gérer vos projets GitHub (pull requests, etc.) directement depuis le terminal.
+            </div>
+            
+            <div class="signature">
+                <div class="signature-photo">JK</div>
+                <div class="signature-info">
+                    <div class="signature-name">Jack-Kevin TSAKEM</div>
+                    <div class="signature-company">VinTech</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ÉTAPE 10 -->
+        <div class="step-card">
+            <div class="step-header">
+                <div class="step-number">10</div>
+                <div class="step-title">Authentifier GitHub CLI</div>
+            </div>
+            
+            <div class="commands-section">
+                <div class="command-box">gh auth login</div>
+            </div>
+            
+            <div class="description">
+                Authentifier le GitHub CLI pour lui donner accès à votre compte GitHub.
+            </div>
+            
+            <div class="info-box">
+                💡 Suivez les instructions à l'écran pour terminer l'authentification.
+            </div>
+            
+            <div class="signature">
+                <div class="signature-photo">JK</div>
+                <div class="signature-info">
+                    <div class="signature-name">Jack-Kevin TSAKEM</div>
+                    <div class="signature-company">VinTech</div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p style="font-size: 1.1em; font-weight: bold;">© 2026 VinTech - Tous droits réservés</p>
+            <p style="margin-top: 10px;">Besoin d'aide ? Contactez-nous !</p>
+        </footer>
+    </div>
+</body>
+</html>
