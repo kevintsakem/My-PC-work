@@ -38,6 +38,11 @@ public class Announcement {
     @Builder.Default
     private boolean featured = false;
 
+    private String imageFilename;
+    private String imageUrl;
+
+    private String linkUrl;
+
     @Column(updatable = false)
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();

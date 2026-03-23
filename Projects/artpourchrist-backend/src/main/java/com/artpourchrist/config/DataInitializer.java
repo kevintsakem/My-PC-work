@@ -31,7 +31,7 @@ public class DataInitializer {
                         .role(User.Role.SUPER_ADMIN)
                         .build();
                 userRepository.save(admin);
-                log.info("✅ Admin created: {} / {}", adminEmail, adminPassword);
+                log.info("✅ Admin created: {}", adminEmail);
             } else {
                 log.info("ℹ️  Admin already exists: {}", adminEmail);
             }

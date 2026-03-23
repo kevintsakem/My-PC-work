@@ -29,8 +29,8 @@ public class VideoService {
 
     public VideoDto.Response create(String title, String description, String category,
                                     MultipartFile videoFile, MultipartFile thumbnailFile) {
-        String videoPath = fileStorageService.store(videoFile, "videos");
-        String thumbnailPath = fileStorageService.store(thumbnailFile, "thumbnails");
+        String videoPath = fileStorageService.storeVideo(videoFile, "videos");
+        String thumbnailPath = fileStorageService.storeThumbnail(thumbnailFile, "thumbnails");
 
         Video video = Video.builder()
                 .title(title)

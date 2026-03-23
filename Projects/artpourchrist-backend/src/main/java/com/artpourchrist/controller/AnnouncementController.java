@@ -2,11 +2,11 @@ package com.artpourchrist.controller;
 
 import com.artpourchrist.dto.AnnouncementDto;
 import com.artpourchrist.service.AnnouncementService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -27,17 +27,38 @@ public class AnnouncementController {
         return ResponseEntity.ok(service.getById(id));
     }
 
-    @PostMapping
+    @PostMapping(consumes = "multipart/form-data")
     public ResponseEntity<AnnouncementDto.Response> create(
-            @Valid @RequestBody AnnouncementDto.Request request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.create(request));
+            @RequestParam("title") String title,
+            @RequestParam("description") String description,
+            @RequestParam("date") String date,
+            @RequestParam(value = "time", required = false) String time,
+            @RequestParam(value = "location", required = false) String location,
+            @RequestParam("category") String category,
+            @RequestParam(value = "featured", defaultValue = "false") boolean featured,
+            @RequestParam(value = "linkUrl", required = false) String linkUrl,
+            @RequestParam(value = "image", required = false) MultipartFile image) {
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(service.create(title, description, date, time, location,
+                        category, featured, linkUrl, image));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = "multipart/form-data")
     public ResponseEntity<AnnouncementDto.Response> update(
             @PathVariable String id,
-            @Valid @RequestBody AnnouncementDto.Request request) {
-        return ResponseEntity.ok(service.update(id, request));
+            @RequestParam("title") String title,
+            @RequestParam("description") String description,
+            @RequestParam("date") String date,
+            @RequestParam(value = "time", required = false) String time,
+            @RequestParam(value = "location", required = false) String location,
+            @RequestParam("category") String category,
+            @RequestParam(value = "featured", defaultValue = "false") boolean featured,
+            @RequestParam(value = "linkUrl", required = false) String linkUrl,
+            @RequestParam(value = "image", required = false) MultipartFile image) {
+
+        return ResponseEntity.ok(service.update(id, title, description, date, time, location,
+                category, featured, linkUrl, image));
     }
 
     @DeleteMapping("/{id}")

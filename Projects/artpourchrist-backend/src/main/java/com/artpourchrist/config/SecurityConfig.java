@@ -19,6 +19,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -37,6 +38,9 @@ public class SecurityConfig {
     @Value("${app.cors.allowed-origins}")
     private String allowedOrigins;
 
+    @Value("${spring.h2.console.enabled:false}")
+    private boolean h2ConsoleEnabled;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -44,21 +48,43 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(auth -> auth
-                // Allow preflight OPTIONS requests for all endpoints
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                // Public endpoints
-                .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/announcements/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/photos/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/videos/**").permitAll()
-                .requestMatchers("/uploads/**").permitAll()
-                .requestMatchers("/h2-console/**").permitAll()
-                .requestMatchers("/", "/api").permitAll()
-                // All other endpoints require authentication
-                .anyRequest().authenticated()
+            .authorizeHttpRequests(auth -> {
+                auth
+                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                    .requestMatchers("/api/auth/**").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/announcements/**").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/photos/**").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/videos/**").permitAll()
+                    .requestMatchers("/uploads/**").permitAll()
+                    .requestMatchers("/", "/api").permitAll();
+                // Console H2 uniquement en développement local
+                if (h2ConsoleEnabled) {
+                    auth.requestMatchers("/h2-console/**").permitAll();
+                }
+                auth.anyRequest().authenticated();
+            })
+            .headers(headers -> headers
+                // X-Content-Type-Options: nosniff (empêche le MIME sniffing)
+                .contentTypeOptions(contentType -> {})
+                // X-Frame-Options: DENY (empêche le clickjacking)
+                .frameOptions(frame -> {
+                    if (h2ConsoleEnabled) {
+                        frame.sameOrigin(); // requis pour la console H2
+                    } else {
+                        frame.deny();
+                    }
+                })
+                // HSTS (force HTTPS)
+                .httpStrictTransportSecurity(hsts -> hsts
+                    .maxAgeInSeconds(31536000)
+                    .includeSubDomains(true))
+                // Referrer-Policy
+                .referrerPolicy(referrer -> referrer
+                    .policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN))
+                // Permissions-Policy
+                .permissionsPolicy(permissions -> permissions
+                    .policy("camera=(), microphone=(), geolocation=(), payment=()"))
             )
-            .headers(headers -> headers.frameOptions(frame -> frame.disable()))
             .authenticationProvider(authenticationProvider())
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -69,17 +95,17 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        // Allow all common dev ports
         List<String> origins = Arrays.stream(allowedOrigins.split(","))
                 .map(String::trim)
+                .filter(s -> !s.isEmpty())
                 .toList();
         config.setAllowedOrigins(origins);
 
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(Arrays.asList(
                 "Authorization", "Content-Type", "Accept",
-                "Origin", "X-Requested-With", "Access-Control-Request-Method",
-                "Access-Control-Request-Headers"
+                "Origin", "X-Requested-With",
+                "Access-Control-Request-Method", "Access-Control-Request-Headers"
         ));
         config.setExposedHeaders(List.of("Authorization"));
         config.setAllowCredentials(true);

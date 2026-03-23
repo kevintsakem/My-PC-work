@@ -29,7 +29,7 @@ public class PhotoService {
 
     public PhotoDto.Response create(String title, String description, String category,
                                     MultipartFile imageFile) {
-        String relativePath = fileStorageService.store(imageFile, "photos");
+        String relativePath = fileStorageService.storeImage(imageFile, "photos");
         String url = fileStorageService.getUrl(relativePath);
 
         Photo photo = Photo.builder()

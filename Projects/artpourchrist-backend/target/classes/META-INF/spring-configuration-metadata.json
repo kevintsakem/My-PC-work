@@ -9,13 +9,13 @@
       "name": "app.admin",
       "type": "com.artpourchrist.config.AppProperties$Admin",
       "sourceType": "com.artpourchrist.config.AppProperties",
-      "sourceMethod": "getAdmin()"
+      "sourceMethod": "public com.artpourchrist.config.AppProperties.Admin getAdmin() "
     },
     {
       "name": "app.cors",
       "type": "com.artpourchrist.config.AppProperties$Cors",
       "sourceType": "com.artpourchrist.config.AppProperties",
-      "sourceMethod": "getCors()"
+      "sourceMethod": "public com.artpourchrist.config.AppProperties.Cors getCors() "
     }
   ],
   "properties": [
