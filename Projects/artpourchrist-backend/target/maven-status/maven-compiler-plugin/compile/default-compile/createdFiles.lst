@@ -6,8 +6,8 @@ com/artpourchrist/ArtPourChristApplication.class
 com/artpourchrist/controller/AnnouncementController.class
 com/artpourchrist/service/PhotoService.class
 com/artpourchrist/config/WebConfig.class
-com/artpourchrist/dto/PhotoDto.class
 com/artpourchrist/security/JwtAuthFilter.class
+com/artpourchrist/dto/PhotoDto.class
 com/artpourchrist/dto/VideoDto$Response$ResponseBuilder.class
 com/artpourchrist/service/AnnouncementService.class
 com/artpourchrist/dto/PhotoDto$Response$ResponseBuilder.class
@@ -16,8 +16,8 @@ com/artpourchrist/model/Announcement$AnnouncementBuilder.class
 com/artpourchrist/model/Activity.class
 com/artpourchrist/dto/VideoDto.class
 com/artpourchrist/security/JwtUtil.class
-com/artpourchrist/repository/UserRepository.class
 com/artpourchrist/model/Activity$ActivityType.class
+com/artpourchrist/repository/UserRepository.class
 com/artpourchrist/dto/VideoDto$Response.class
 com/artpourchrist/service/FileStorageService.class
 com/artpourchrist/model/User$Role.class
@@ -49,8 +49,8 @@ com/artpourchrist/config/DataInitializer.class
 com/artpourchrist/repository/AnnouncementRepository.class
 com/artpourchrist/model/Video.class
 com/artpourchrist/repository/ActivityRepository.class
-com/artpourchrist/dto/DashboardDto$DashboardDtoBuilder.class
 com/artpourchrist/dto/AuthDto$LoginResponse.class
+com/artpourchrist/dto/DashboardDto$DashboardDtoBuilder.class
 com/artpourchrist/config/CustomUserDetailsService.class
 com/artpourchrist/model/Photo$PhotoBuilder.class
 com/artpourchrist/model/Photo.class
